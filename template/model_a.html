@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>model alpha</title>
+</head>
+<body>
+<div style="margin-left: 5px; font-size: 18px;">
+    <div><label style="min-width: 200px; display: inline-block;">系统维度：</label><span>1</span></div>
+    <div><label style="min-width: 200px; display: inline-block;">增量作用方程（0）：</label><span>(vTarget[0] - vSource[0])^2 * direction; // G = M1 = M2 = 1 => F = (G * M1 * M2) / (r^2)</span></div>
+    <div><label style="min-width: 200px; display: inline-block;">系统粒子数：</label><input id="vectorCount" type="number" value="2"></div>
+    <div><label style="min-width: 200px; display: inline-block;">系统周期：</label><input id="period" type="number" value="100"></div>
+    <input id="go" type="button" value="GO">
+</div>
+<div id="main" style="width: 100%;height:400px;"></div>
+
+<script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="/yk_index/static/js/lib/thirdparty/echarts.min.js"></script>
+
+<script>
+    var DIMENSION = 1;
+
+    var initModel = function () {
+        var model = [];
+
+        for (var i = 0; i < $('#vectorCount').val(); i++) {
+            var v = [parseFloat(i * 2.5) - 1.25];
+            model.push(v);
+        }
+        return model;
+    }
+
+    var buildVector = function (DIMENSION) {
+        var vDelta = [];
+        for (var i = 0; i < DIMENSION; i++) {
+            vDelta.push(0.0);
+        }
+        return vDelta;
+    }
+
+    var vDeltaMerge = function (vTarget, vDelta) {
+        for (var i = 0; i < vTarget.length; i++) {
+            vTarget[i] += vDelta[i];
+        }
+        return vTarget;
+    }
+
+    /**
+     * element relevant function
+     * F = (G * m1 * m2 ) / r^2
+     *
+     * m1 = m2 = G = 1 => F = 1 / r^2
+     * r = | vTarget[0] - vSource[0] | => F = 1 / (vTarget[0] - vSource[0])^2
+     *
+     * Δs = vt = at^2 = F / m * t^2
+     * m = t = 1 => Δs = (vTarget[0] - vSource[0])^2
+     */
+    var ef0 = function (vTarget, vSource, dimension) {
+        var delta = 0;
+        if (vTarget[dimension] - vSource[dimension] !== 0) {
+            var direction = vSource[dimension] - vTarget[dimension] > 0 ? 1 : -1;
+            delta = 1 / ((vTarget[dimension] - vSource[dimension]) * (vTarget[dimension] - vSource[dimension])) * direction;
+        }
+
+        console.log(delta);
+        return delta;
+    }
+
+    /**
+     * vector relevant function
+     */
+    var vf = function (vTarget, vSource) {
+        var vDelta = [];
+
+        for (var i = 0; i < DIMENSION; i++) {
+            try {
+                var ef = eval('ef' + i);
+                vDelta[i] = ef(vTarget, vSource, i);
+            }
+            catch (err) {
+                vDelta[i] = 0;
+            }
+        }
+
+        return vDelta;
+    }
+
+    /**
+     * vector state function
+     */
+    var vsf = function (vTarget, model) {
+        var vDelta = buildVector(DIMENSION);
+        for (var i = 0; i < model.length; i++) {
+            vDelta = vDeltaMerge(vDelta, vf(vTarget, model[i]));
+        }
+        return vDelta;
+    }
+
+    /**
+     * matrix state function
+     * @param model
+     * @returns {Array}
+     */
+    var sf = function (model) {
+        var vDeltaMatrix = [];
+
+        for (var i = 0; i < model.length; i++) {
+            var vDelta = vsf(model[i], model);
+            vDeltaMatrix.push(vDelta);
+        }
+
+        return vDeltaMatrix;
+    }
+
+    var go = function (model) {
+        var vDeltaMatrix = sf(model);
+
+        for (var i = 0; i < model.length; i++) {
+            model[i] = vDeltaMerge(model[i], vDeltaMatrix[i]);
+        }
+    }
+
+    /**
+     * 状态变化序列可视化
+     * @param ss
+     */
+    var sRender = function (ss) {
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        var series = [];
+        for (var i = 0; i < ss[0].length; i++) {
+            var item = {
+                name: i,
+                type: 'scatter',
+                large: true,
+                symbolSize: 5,
+                data: (function () {
+                    var d = [];
+                    var len = ss.length;
+                    var x = 0;
+                    while (len--) {
+                        var y = ss[x][i][0]
+                        d.push([
+                            x, y
+                        ]);
+                        x += 1;
+                    }
+                    return d;
+                })()
+            };
+            series.push(item);
+        }
+        console.log(series);
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: '状态变化序列'
+            },
+            tooltip : {
+                trigger: 'axis',
+                showDelay : 0,
+                axisPointer:{
+                    show: true,
+                    type : 'cross',
+                    lineStyle: {
+                        type : 'dashed',
+                        width : 1
+                    }
+                },
+                zlevel: 1
+            },
+            legend: {
+                data:['sin','cos']
+            },
+            xAxis : [
+                {
+                    type : 'value',
+                    scale:true
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value',
+                    scale:true
+                }
+            ],
+            series : series
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    }
+
+    var run = function () {
+        var model = initModel();
+        var n = $('#period').val();
+        var ss = [];
+        ss.push($.extend(true, [], model));
+        for (var i = 0; i < n; i++) {
+            go(model);
+            ss.push($.extend(true, [], model));
+        }
+        sRender(ss);
+        console.log(ss);
+    };
+
+    $('#go').click(function () {
+        run();
+    });
+
+    $('#go').click();
+
+</script>
+</body>
+</html>

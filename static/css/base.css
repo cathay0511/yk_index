@@ -1,0 +1,18 @@
+body {
+    margin: 0;
+    background: #999;
+    color: #fff;
+    min-width: 600px;
+}
+
+.dib {
+    display: inline-block;
+}
+
+.dn {
+    display: none;
+}
+
+.fr {
+    float: right;
+}
