@@ -16,8 +16,323 @@
 <script type="text/javascript">
     // 百度地图API功能
     var map = new BMap.Map("allmap");    // 创建Map实例
-    map.centerAndZoom(new BMap.Point(116.404, 39.915), 11);  // 初始化地图,设置中心点坐标和地图级别
+    map.centerAndZoom(new BMap.Point(120.189606,30.249207), 11);  // 初始化地图,设置中心点坐标和地图级别
     map.addControl(new BMap.MapTypeControl());   //添加地图类型控件
-    map.setCurrentCity("北京");          // 设置地图显示的城市 此项是必须设置的
+    map.setCurrentCity("杭州");          // 设置地图显示的城市 此项是必须设置的
     map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+    map.addControl(new BMap.NavigationControl()); //导航
+
+    var iconTypeMap = {
+        "community": {
+            "x": 0,
+            "y": -10 * 25
+        },
+        "communityx": {
+            "x": 0,
+            "y": -11 * 25
+        },
+        "business": {
+            "x": 0,
+            "y": 0
+        },
+        "shopping": {
+            "x": 0,
+            "y": -1 * 25
+        },
+        "school": {
+            "x": 0,
+            "y": -2 * 25
+        },
+        "spot": { // 景点
+            "x": 0,
+            "y": -3 * 25
+        },
+        "basic": {
+            "x": 0,
+            "y": -4 * 25
+        }
+    }
+    var markerList = [
+        {
+            label: "阿里巴巴滨江园区",
+            location: "120.198197,30.195682",
+            iconType: "business"
+        },
+        {
+            label: "阿里巴巴西溪园区",
+            location: "120.030212,30.285722",
+            iconType: "business"
+        },
+        {
+            label: "支付宝大楼",
+            location: "120.132248,30.278996",
+            iconType: "business"
+        },
+        {
+            label: "余杭区梦想小镇",
+            location: "120.009976,30.299256",
+            iconType: "business"
+        },
+        {
+            label: "未来科技城",
+            location: "119.986621,30.279953",
+            iconType: "business"
+        },
+        {
+            label: "良渚文化村",
+            location: "120.035535,30.3707",
+            iconType: "business"
+        },
+        {
+            label: "浙江大学(紫金港校区)",
+            location: "120.09677,30.30983",
+            iconType: "school"
+        },
+        {
+            label: "浙江大学(玉泉校区)",
+            location: "120.129649,30.270072",
+            iconType: "school"
+        },
+        {
+            label: "杭州师范大学",
+            location: "120.401448,30.322325",
+            iconType: "school"
+        },
+        {
+            label: "求是小学",
+            location: "120.071098,30.245968",
+            iconType: "school"
+        },
+        {
+            label: "杭州学军中学",
+            location: "120.145838,30.284391",
+            iconType: "school"
+        },
+        {
+            label: "西溪国家湿地公园",
+            location: "120.074007,30.274525",
+            iconType: "spot"
+        },
+        {
+            label: "西湖风景区",
+            location: "120.163849,30.24567",
+            iconType: "spot"
+        },
+        {
+            label: "城西银泰",
+            location: "120.113114,30.305381",
+            iconType: "shopping"
+        },
+        {
+            label: "西湖银泰",
+            location: "120.17215,30.249589",
+            iconType: "shopping"
+        },
+        {
+            label: "西溪银泰城",
+            location: "120.082093,30.298639",
+            iconType: "shopping"
+        },
+        {
+            label: "西溪印象城",
+            location: "120.057118,30.25315",
+            iconType: "shopping"
+        },
+        {
+            label: "杭州火车站",
+            location: "120.189606,30.249207",
+            iconType: "basic"
+        },
+        {
+            label: "杭州东站",
+            location: "120.219396,30.297149",
+            iconType: "basic"
+        },
+        {
+            label: "杭州萧山国际机场",
+            location: "120.443764,30.241497",
+            iconType: "basic"
+        }
+
+        ,
+        {
+            label: "之江九里",
+            location: "120.100786,30.171867",
+            iconType: "community"
+        },
+        {
+            label: "绿城之江一号小区",
+            location: "120.077379,30.170326",
+            iconType: "community"
+        },
+        {
+            label: "篁外山庄",
+            location: "120.067173,30.149563",
+            iconType: "community"
+        },
+        {
+            label: "梧桐燕庐",
+            location: "120.098445,30.14142",
+            iconType: "community"
+        },
+
+        {
+            label: "中海西溪华府",
+            location: "120.06079,30.296581",
+            iconType: "community"
+        },
+        {
+            label: "金地自在城悦活轩",
+            location: "120.076342,30.336788",
+            iconType: "community"
+        },
+        {
+            label: "金地自在城栖霞居",
+            location: "120.074068,30.33524",
+            iconType: "community"
+        },
+        {
+            label: "溪悦宸府",
+            location: "120.028789,30.253441",
+            iconType: "community"
+        },
+        {
+            label: "华元蒙卡岸",
+            location: "120.016392,30.247215",
+            iconType: "community"
+        },
+        {
+            label: "合景叠彩园",
+            location: "120.034626,30.280652",
+            iconType: "community"
+        },
+        {
+            label: "富力西溪悦居",
+            location: "120.035735,30.289494",
+            iconType: "community"
+        },
+        {
+            label: "合景瑜翠园",
+            location: "120.000142,30.285351",
+            iconType: "community"
+        },
+        {
+            label: "万科杭宸(期房)",
+            location: "120.121735,30.356646",
+            iconType: "community"
+        },
+        {
+            label: "宝嘉誉府（期房）",
+            location: "120.089542,30.319556",
+            iconType: "community"
+        },
+        {
+            label: "宝嘉誉府（期房）",
+            location: "120.089542,30.319556",
+            iconType: "community"
+        },
+        {
+            label: "首开武林8栋（期房）",
+            location: "120.197731,30.313793",
+            iconType: "community"
+        },
+        {
+            label: "杭州万通时尚公馆（期房）",
+            location: "120.006282,30.292768",
+            iconType: "community"
+        },
+        {
+            label: "万科溪望（期房）",
+            location: "120.025941,30.276524",
+            iconType: "community"
+        }
+
+        ,
+        {
+            label: "复地黄龙和山",
+            location: "120.071602,30.248255",
+            iconType: "communityx"
+        },
+        {
+            label: "雅戈尔·西溪晴雪",
+            location: "120.063104,30.250407",
+            iconType: "communityx"
+        },
+        {
+            label: "万科西庐",
+            location: "120.063563,30.298473",
+            iconType: "communityx"
+        },
+        {
+            label: "华元爱丁郡",
+            location: "120.040343,30.258137",
+            iconType: "communityx"
+        },
+        {
+            label: "天阳美林湾",
+            location: "120.104827,30.328342",
+            iconType: "communityx"
+        },
+        {
+            label: "丽晶湾",
+            location: "120.108801,30.330805",
+            iconType: "communityx"
+        },
+        {
+            label: "金地申花里",
+            location: "120.111697,30.329038",
+            iconType: "communityx"
+        },
+        {
+            label: "汉嘉申花郡",
+            location: "120.107496,30.327694",
+            iconType: "communityx"
+        },
+        {
+            label: "西湖家园",
+            location: "120.096063,30.262014",
+            iconType: "communityx"
+        },
+        {
+            label: "金都花园",
+            location: "120.104995,30.282831",
+            iconType: "communityx"
+        },
+        {
+            label: "盛世嘉园",
+            location: "120.031927,30.241595",
+            iconType: "communityx"
+        },
+        {
+            label: "金地艺境",
+            location: "120.304721,30.366741",
+            iconType: "communityx"
+        }
+    ];
+
+    function renderMarkerList(markerList) {
+        for (var i = 0; i < markerList.length; i++) {
+            var config = markerList[i];
+            var location = config.location.split(',');
+            var point = new BMap.Point(location[0], location[1]);
+            var marker = new BMap.Marker(point);
+
+            var myIcon = new BMap.Icon("http://api.map.baidu.com/img/markers.png", new BMap.Size(23, 25), {  
+                        offset: new BMap.Size(10, 25), // 指定定位位置  
+                        imageOffset: new BMap.Size(iconTypeMap[config.iconType].x, iconTypeMap[config.iconType].y) // 设置图片偏移  
+                    });  
+            marker.setIcon(myIcon);
+
+            var label = new BMap.Label(config.label,{
+                offset:new BMap.Size(-15,28)
+            });
+            label.setStyle({opacity:0.7});
+            marker.setLabel(label);
+            map.addOverlay(marker);
+        }
+    }
+
+    renderMarkerList(markerList);
+
+
 </script>
