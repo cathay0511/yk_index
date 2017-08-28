@@ -5,12 +5,105 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <style type="text/css">
         body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+
+        .op-panel {
+            position: fixed;
+            top: 100px;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .op-panel .op-row {
+            height: 40px;
+            line-height: 40px;
+            /*vertical-align: middle;*/
+        }
+
+        .op-panel .op-row .seleect-item {
+            /*display: table-cell;*/
+            vertical-align: middle;
+        }
+
+        .op-panel .op-row .icon-wrap {
+            position: relative;
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            vertical-align: middle;
+            overflow: hidden;
+        }
+
+        .op-panel .op-row .icon {
+            /*display: table-cell;*/
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .op-panel .op-row .label {
+            /*display: table-cell;*/
+            vertical-align: middle;
+            color: #333;
+        }
+
     </style>
+    <script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.2"></script>
-    <title>地图展示</title>
+    <title>白玉楼检索地图</title>
 </head>
 <body>
 <div id="allmap"></div>
+<div class="op-panel">
+    <div class="op-row">
+        <input class="seleect-item" type="checkbox" data-type="community" checked="true">
+        <div class="icon-wrap">
+            <img class="icon" width="64" src="//img.alicdn.com/tfs/TB1wttFagMPMeJjy1XcXXXpppXa-64-128.png" style="clip: rect(96px, 64px, 128px, 32px); top: -96px; left: -32px;">
+        </div>
+        <span class="label">小区（候选）</span>
+    </div>
+    <div class="op-row">
+        <input class="seleect-item" type="checkbox" data-type="communityx" checked="true">
+        <div class="icon-wrap">
+            <img class="icon" width="64" src="//img.alicdn.com/tfs/TB1wttFagMPMeJjy1XcXXXpppXa-64-128.png" style="clip: rect(64px, 64px, 96px, 32px); top: -64px; left: -32px;">
+        </div>
+        <span class="label">小区</span>
+    </div>
+    <div class="op-row">
+        <input class="seleect-item" type="checkbox" data-type="business" checked="true">
+        <div class="icon-wrap">
+            <img class="icon" width="64" src="//img.alicdn.com/tfs/TB1wttFagMPMeJjy1XcXXXpppXa-64-128.png" style="clip: rect(0, 64px, 32px, 32px); top: 0; left: -32px;">
+        </div>
+        <span class="label">产业园</span>
+    </div>
+    <div class="op-row">
+        <input class="seleect-item" type="checkbox" data-type="shopping" checked="true">
+        <div class="icon-wrap">
+            <img class="icon" width="64" src="//img.alicdn.com/tfs/TB1wttFagMPMeJjy1XcXXXpppXa-64-128.png" style="clip: rect(64px, 32px, 96px, 0); top: -64px; left: 0;">
+        </div>
+        <span class="label">商业配套</span>
+    </div>
+    <div class="op-row">
+        <input class="seleect-item" type="checkbox" data-type="school" checked="true">
+        <div class="icon-wrap">
+            <img class="icon" width="64" src="//img.alicdn.com/tfs/TB1wttFagMPMeJjy1XcXXXpppXa-64-128.png" style="clip: rect(32px, 32px, 64px, 0); top: -32px; left: 0;">
+        </div>
+        <span class="label">教育</span>
+    </div>
+    <div class="op-row">
+        <input class="seleect-item" type="checkbox" data-type="spot" checked="true">
+        <div class="icon-wrap">
+            <img class="icon" width="64" src="//img.alicdn.com/tfs/TB1wttFagMPMeJjy1XcXXXpppXa-64-128.png" style="clip: rect(32px, 64px, 64px, 32px); top: -32px; left: -32px;">
+        </div>
+        <span class="label">景区</span>
+    </div>
+    <div class="op-row">
+        <input class="seleect-item" type="checkbox" data-type="basic" checked="true">
+        <div class="icon-wrap">
+            <img class="icon" width="64" src="//img.alicdn.com/tfs/TB1wttFagMPMeJjy1XcXXXpppXa-64-128.png" style="clip: rect(0, 32px, 32px, 0)">
+        </div>
+        <span class="label">综合</span>
+    </div>
+</div>
 </body>
 </html>
 <script type="text/javascript">
@@ -323,9 +416,15 @@
     ];
 
 
-    function renderMarkerList(markerList) {
+    function renderMarkerList(markerList, filterTypeDist) {
+        map.clearOverlays();
+
         for (var i = 0; i < markerList.length; i++) {
             var config = markerList[i];
+            if (filterTypeDist[config.iconType]) {
+                continue;
+            }
+
             var location = config.location.split(',');
             var point = new BMap.Point(location[0], location[1]);
             var marker = new BMap.Marker(point, {
@@ -353,7 +452,23 @@
         }
     }
 
-    renderMarkerList(markerList);
+    function renderOpRowList(config) {
+        for (var i = 0; i < elements.length; i++) {
+            
+        }
+    }
+
+    var filterTypeDist = {}
+    $('.seleect-item').on('change', function(ev) {
+        var $target = $(ev.currentTarget);
+        // var index = $('.seleect-item').index($target);
+        var type = $target.data('type');
+
+        filterTypeDist[type] = !$target.prop('checked');
+        renderMarkerList(markerList, filterTypeDist);
+    });
+
+    renderMarkerList(markerList, filterTypeDist);
 
 
 </script>
