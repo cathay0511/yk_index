@@ -8,8 +8,8 @@
 
         .op-panel {
             position: fixed;
-            top: 100px;
-            right: 0;
+            top: 0;
+            left: 0;
             z-index: 1000;
         }
 
@@ -113,7 +113,7 @@
     map.addControl(new BMap.MapTypeControl());   //添加地图类型控件
     map.setCurrentCity("杭州");          // 设置地图显示的城市 此项是必须设置的
     map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
-    map.addControl(new BMap.NavigationControl()); //导航
+    // map.addControl(new BMap.NavigationControl()); //导航
 
     var iconTypeMap = {
         "community": {
