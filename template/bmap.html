@@ -24,32 +24,32 @@
 
     var iconTypeMap = {
         "community": {
-            "x": 0,
-            "y": -10 * 25
+            "x": -32,
+            "y": -3 * 32
         },
         "communityx": {
-            "x": 0,
-            "y": -11 * 25
+            "x": -32,
+            "y": -2 * 32
         },
         "business": {
-            "x": 0,
+            "x": -32,
             "y": 0
         },
         "shopping": {
             "x": 0,
-            "y": -1 * 25
+            "y": -2 * 32
         },
         "school": {
             "x": 0,
-            "y": -2 * 25
+            "y": -1 * 32
         },
         "spot": { // 景点
-            "x": 0,
-            "y": -3 * 25
+            "x": -32,
+            "y": -1 * 32
         },
         "basic": {
             "x": 0,
-            "y": -4 * 25
+            "y": 0
         }
     }
     var markerList = [
@@ -158,63 +158,75 @@
         {
             label: "之江九里",
             location: "120.100786,30.171867",
-            iconType: "community"
+            iconType: "community",
+            description: "小区名称：之江九里<br/>房屋类型：精装<br/>小区档次：中上<br/>到手价格：300W<br/>房屋户型：2房2厅1卫中层（89m）"
         },
         {
             label: "绿城之江一号小区",
             location: "120.077379,30.170326",
-            iconType: "community"
+            iconType: "community",
+            description: "小区名称：之江一号<br/>房屋类型：精装<br/>小区档次：上<br/>到手价格：330W<br/>房屋户型：2房2厅1卫中层（89m）"
         },
         {
             label: "篁外山庄",
             location: "120.067173,30.149563",
-            iconType: "community"
+            iconType: "community",
+            description: "小区名称：篁外山庄<br/>房屋类型：毛坯<br/>小区档次：一般<br/>到手价格：250W<br/>房屋户型：3房2厅1卫中层（89m）"
         },
         {
             label: "梧桐燕庐",
             location: "120.098445,30.14142",
-            iconType: "community"
+            iconType: "community",
+            description: "小区名称：梧桐燕庐<br/>房屋类型：普装<br/>小区档次：一般<br/>到手价格：250W<br/>房屋户型：3房2厅1卫中层（89m）"
         },
 
         {
             label: "中海西溪华府",
             location: "120.06079,30.296581",
-            iconType: "community"
+            iconType: "community",
+            description: "小区名称：中海西溪华府<br/>房屋类型：精装<br/>小区档次：中上<br/>到手价格：350W<br/>房屋户型：3房2厅1卫中层（89m）"
         },
         {
             label: "金地自在城悦活轩",
             location: "120.076342,30.336788",
-            iconType: "community"
+            iconType: "community",
+            description: "小区名称：金地自在城悦活轩<br/>房屋类型：精装loft<br/>小区档次：一般<br/>到手价格：270W<br/>房屋户型：3房2厅2卫中层（89m）"
         },
         {
             label: "金地自在城栖霞居",
             location: "120.074068,30.33524",
-            iconType: "community"
+            iconType: "community",
+            description: "小区名称：金地自在城栖霞居<br/>房屋类型：精装<br/>小区档次：中上<br/>到手价格：320W<br/>房屋户型：3房2厅1卫中层（89m）"
         },
         {
             label: "溪悦宸府",
             location: "120.028789,30.253441",
-            iconType: "community"
+            iconType: "community",
+            description: "小区名称：溪悦宸府<br/>房屋类型：毛坯<br/>小区档次：中上<br/>到手价格：250W<br/>房屋户型：3房2厅1卫中层（89m）"
         },
         {
             label: "华元蒙卡岸",
             location: "120.016392,30.247215",
-            iconType: "community"
+            iconType: "community",
+            description: "小区名称：华元蒙卡岸<br/>房屋类型：毛坯<br/>小区档次：中上<br/>到手价格：250W<br/>房屋户型：3房2厅1卫中层（89m）"
         },
         {
             label: "合景叠彩园",
             location: "120.034626,30.280652",
-            iconType: "community"
+            iconType: "community",
+            description: "小区名称：合景叠彩园<br/>房屋类型：精装<br/>小区档次：中上<br/>到手价格：300W<br/>房屋户型：3房2厅1卫中层（89m）"
         },
         {
             label: "富力西溪悦居",
             location: "120.035735,30.289494",
-            iconType: "community"
+            iconType: "community",
+            description: "小区名称：富力西溪悦居<br/>房屋类型：精装<br/>小区档次：中上<br/>到手价格：300W<br/>房屋户型：3房2厅1卫中层（89m）"
         },
         {
             label: "合景瑜翠园",
             location: "120.000142,30.285351",
-            iconType: "community"
+            iconType: "community",
+            description: "小区名称：合景瑜翠园<br/>房屋类型：精装<br/>小区档次：中上<br/>到手价格：250W<br/>房屋户型：3房2厅1卫中层（89m）"
         },
         {
             label: "万科杭宸(期房)",
@@ -310,19 +322,28 @@
         }
     ];
 
+
     function renderMarkerList(markerList) {
         for (var i = 0; i < markerList.length; i++) {
             var config = markerList[i];
             var location = config.location.split(',');
             var point = new BMap.Point(location[0], location[1]);
-            var marker = new BMap.Marker(point);
+            var marker = new BMap.Marker(point, {
+                enableClicking:true
+            });
 
-            var myIcon = new BMap.Icon("http://api.map.baidu.com/img/markers.png", new BMap.Size(23, 25), {  
-                        offset: new BMap.Size(10, 25), // 指定定位位置  
-                        imageOffset: new BMap.Size(iconTypeMap[config.iconType].x, iconTypeMap[config.iconType].y) // 设置图片偏移  
-                    });  
+            if (config.description) {
+                marker.description = config.description
+                marker.addEventListener('click',function(type, target, pixel, point){
+                    this.openInfoWindow(new BMap.InfoWindow(this.description));
+                });
+            }
+
+            var myIcon = new BMap.Icon("//img.alicdn.com/tfs/TB1wttFagMPMeJjy1XcXXXpppXa-64-128.png", new BMap.Size(32, 32), {  
+                offset: new BMap.Size(10, 25), // 指定定位位置  
+                imageOffset: new BMap.Size(iconTypeMap[config.iconType].x, iconTypeMap[config.iconType].y) // 设置图片偏移  
+            });  
             marker.setIcon(myIcon);
-
             var label = new BMap.Label(config.label,{
                 offset:new BMap.Size(-15,28)
             });
